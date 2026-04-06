@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/ws/00000000/json/"
+  },
+  "response": {
+    "status": 503,
+    "jsonBody": {
+      "message": "Service Unavailable"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
