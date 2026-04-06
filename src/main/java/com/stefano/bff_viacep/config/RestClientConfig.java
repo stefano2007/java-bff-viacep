@@ -15,6 +15,9 @@ public class RestClientConfig {
     @Value("${viacep.url}")
     private String baseUrl;
 
+    @Value("${viacep.timeout-seconds}")
+    private Long timeoutSeconds;
+
     @Bean
     public RestClient restClientViaCEP(RestClient.Builder builder) {
         return builder
@@ -25,8 +28,8 @@ public class RestClientConfig {
 
     private ClientHttpRequestFactory getClientRequestFactory() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(Duration.ofSeconds(5));
-        factory.setReadTimeout(Duration.ofSeconds(5));
+        factory.setConnectTimeout(Duration.ofSeconds(timeoutSeconds));
+        factory.setReadTimeout(Duration.ofSeconds(timeoutSeconds));
         return factory;
     }
 }

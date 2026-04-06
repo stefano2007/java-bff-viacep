@@ -2,22 +2,18 @@ package com.stefano.bff_viacep.exception;
 
 import com.stefano.bff_viacep.dto.ErroResponse;
 import com.stefano.bff_viacep.exception.custom.EnderecoErroInternoException;
+import com.stefano.bff_viacep.exception.custom.EnderecoErroTempoEsperaException;
 import com.stefano.bff_viacep.exception.custom.EnderecoNaoEncontradoException;
 import com.stefano.bff_viacep.exception.custom.EnderecoRequisicaoInvalidaException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-
 @RestControllerAdvice
 public class GlobalHandlerException {
-
-    private final Logger logger = LoggerFactory.getLogger(GlobalHandlerException.class);
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErroResponse> handle(
@@ -30,8 +26,6 @@ public class GlobalHandlerException {
                 .findFirst()
                 .orElse("Erro de validação");
 
-        logger.warn("Erro de validação: {}", ex.getMessage());
-
         return new ResponseEntity<>(
                 criarRespostaErro(HttpStatus.BAD_REQUEST.value(), erro, request.getRequestURI()),
                 HttpStatus.BAD_REQUEST
@@ -43,7 +37,6 @@ public class GlobalHandlerException {
             EnderecoNaoEncontradoException ex,
             HttpServletRequest request
     ) {
-        logger.warn("Erro de validação: {}", ex.getMessage());
         return new ResponseEntity<>(
                 criarRespostaErro(HttpStatus.NOT_FOUND.value(), ex.getMessage(), request.getRequestURI()),
                 HttpStatus.NOT_FOUND
@@ -55,7 +48,6 @@ public class GlobalHandlerException {
             EnderecoRequisicaoInvalidaException ex,
             HttpServletRequest request
     ) {
-        logger.warn("Erro de validação: {}", ex.getMessage());
         return new ResponseEntity<>(
                 criarRespostaErro(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), request.getRequestURI()),
                 HttpStatus.BAD_REQUEST
@@ -67,10 +59,20 @@ public class GlobalHandlerException {
             EnderecoErroInternoException ex,
             HttpServletRequest request
     ) {
-        logger.warn("Erro Interno: {}", ex.getMessage());
         return new ResponseEntity<>(
                 criarRespostaErro(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), request.getRequestURI()),
                 HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
+
+    @ExceptionHandler(EnderecoErroTempoEsperaException.class)
+    public ResponseEntity<ErroResponse> handle(
+            EnderecoErroTempoEsperaException ex,
+            HttpServletRequest request
+    ) {
+        return new ResponseEntity<>(
+                criarRespostaErro(HttpStatus.GATEWAY_TIMEOUT.value(), ex.getMessage(), request.getRequestURI()),
+                HttpStatus.GATEWAY_TIMEOUT
         );
     }
 

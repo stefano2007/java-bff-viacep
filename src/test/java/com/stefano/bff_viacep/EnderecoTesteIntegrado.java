@@ -5,6 +5,7 @@ import com.stefano.bff_viacep.testeIntegrados.config.WireMockConfig;
 import com.stefano.bff_viacep.testeIntegrados.config.EmbeddedRedisConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,8 @@ class EnderecoTesteIntegrado {
 
 
     @Test
-    void deveBuscarClientePorCepComSucesso() throws Exception {
+    @DisplayName("Deve buscar cliente por CEP com sucesso e salvar no cache")
+    void deveBuscarClientePorCepComSucessoESalvarNoCache() throws Exception {
         
         mockMvc.perform(get("/api/endereco/01001000"))
                 .andExpect(status().isOk())
@@ -74,6 +76,7 @@ class EnderecoTesteIntegrado {
     }
 
     @Test
+    @DisplayName("Deve lançar exceção ao não encontrar CEP")
     void deveLancarExcecaoAoNaoEncontrarCep() throws Exception {
         mockMvc.perform(get("/api/endereco/99999999"))
                 .andExpect(status().isNotFound())
@@ -84,6 +87,7 @@ class EnderecoTesteIntegrado {
     }
 
     @Test
+    @DisplayName("Deve lançar exceção ao fornecer CEP inválido")
     void deveLancarExcecaoComCepInvalido() throws Exception {
         mockMvc.perform(get("/api/endereco/ABC"))
                 .andExpect(status().isBadRequest())
@@ -95,13 +99,25 @@ class EnderecoTesteIntegrado {
 
 
     @Test
+    @DisplayName("Deve lançar exceção quando API ViaCep estiver indisponível")
     void deveLancarExcecaoQuandoAPIIndiponivel() throws Exception {
         mockMvc.perform(get("/api/endereco/00000000"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.timestamp").exists())
                 .andExpect(jsonPath("$.status").value(500))
-                .andExpect(jsonPath("$.mensagem").value("Erro no servidor do ViaCep"))
+                .andExpect(jsonPath("$.mensagem").value("Erro Interno no servidor do ViaCep"))
                 .andExpect(jsonPath("$.path").value("/api/endereco/00000000"));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção quando API ViaCep estoura o timeout configurado")
+    void deveLancarExcecaoQuandoAPIEstouraTempoDeEspera() throws Exception {
+        mockMvc.perform(get("/api/endereco/00000001"))
+                .andExpect(status().isGatewayTimeout())
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.status").value(504))
+                .andExpect(jsonPath("$.mensagem").value("Erro de tempo de espera ao acessar ViaCep"))
+                .andExpect(jsonPath("$.path").value("/api/endereco/00000001"));
     }
 }
 

@@ -3,12 +3,15 @@ package com.stefano.bff_viacep.service;
 import com.stefano.bff_viacep.client.ViaCepClient;
 import com.stefano.bff_viacep.dto.EnderecoReponse;
 import com.stefano.bff_viacep.exception.custom.EnderecoNaoEncontradoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EnderecoService {
 
+    private final Logger logger = LoggerFactory.getLogger(EnderecoService.class);
     private final ViaCepClient viaCepClient;
 
     public EnderecoService(ViaCepClient viaCepClient) {
@@ -20,6 +23,7 @@ public class EnderecoService {
         var response = viaCepClient.buscarEnderecoPorCep(cep);
 
         if (response.ehErro()) {
+            logger.warn("ViaCep - CEP não encontrado: {}", cep);
             throw new EnderecoNaoEncontradoException(cep);
         }
 

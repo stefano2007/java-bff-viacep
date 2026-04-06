@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/ws/00000001/json/"
+  },
+  "response": {
+    "status": 200,
+    "fixedDelayMilliseconds": 1500,
+    "jsonBody": {
+      "message": "Valida timeout API ViaCEP"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
