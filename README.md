@@ -43,6 +43,8 @@ O projeto segue o padrão MVC (Model-View-Controller):
 - **Client:** cliente HTTP para consumir ViaCEP
 - **Config:** configurações de cache, REST e validação
 
+![Estrutura do projeto](/readme/arquitetura.png)
+
 ---
 
 ## 🔌 Integração com API externa
